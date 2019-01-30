@@ -40,7 +40,6 @@ public class docIndex {
 	private static void readDocuments(String dirName){
 		File dir = new File(dirName);
   		File[] directoryListing = dir.listFiles();
-		Arrays.sort(directoryListing);
 
 		List<String> tempDocument;
 
@@ -53,6 +52,8 @@ public class docIndex {
 		};
 
   		if(directoryListing != null){
+			Arrays.sort(directoryListing);
+
 			//iterate through the directory
     		for(File child : directoryListing){
 
@@ -71,6 +72,7 @@ public class docIndex {
 
 						//iterate through the current line and add any valid words to tempDocument(ArrayList<String>)
 						for(int i = 0; i < currLine.length; ++i){
+							currLine[i] = currLine[i].toLowerCase();
 							//don't include URLs
 							if(validator.isValid(currLine[i])){
 								continue;
@@ -79,10 +81,31 @@ public class docIndex {
 							//split hyphenated words
 							if(currLine[i].contains("-")){
 								String[] hyphenSplit = currLine[i].split("-");
-								if(!isStopWord(hyphenSplit[0])){
+
+								//split words with a forward slash
+								if(hyphenSplit[0].contains("/")){
+									String[] forwardSlashSplit = hyphenSplit[0].split("/");
+									if(!isStopWord(forwardSlashSplit[0])){
+										tempDocument.add(forwardSlashSplit[0]);
+									}
+									if(!isStopWord(forwardSlashSplit[1])){
+										tempDocument.add(forwardSlashSplit[1]);
+									}
+								}
+								else if(!isStopWord(hyphenSplit[0])){
 									tempDocument.add(hyphenSplit[0]);
 								}
-								if(!isStopWord(hyphenSplit[1])){
+
+								if(hyphenSplit[1].contains("/")){
+									String[] forwardSlashSplit = hyphenSplit[1].split("/");
+									if(!isStopWord(forwardSlashSplit[0])){
+										tempDocument.add(forwardSlashSplit[0]);
+									}
+									if(!isStopWord(forwardSlashSplit[1])){
+										tempDocument.add(forwardSlashSplit[1]);
+									}
+								}
+								else if(!isStopWord(hyphenSplit[1])){
 									tempDocument.add(hyphenSplit[1]);
 								}
 								continue;
@@ -127,22 +150,67 @@ public class docIndex {
 			//get the number of terms in each document
 			numTerms = documents.get(i).size();
 			//put the docID and number of terms into the index
-			docIndex.put(i+1, numTerms);
+			docIndex.put(i, numTerms);
 		}
-		//System.out.println(docIndex);TODO
 	}
 
 	//key: term, value: # documents with a point to a linked list of postings with docID/frequency
 	public static HashMap<String, Pair<Integer, LinkedList<Pair<Integer,Integer>>>> termIndex = new HashMap<String, Pair<Integer, LinkedList<Pair<Integer,Integer>>>>();
-	//Pair<Integer, String> pair = new Pair<>(1, "One");
 
 	public static void createTermIndex(List<List<String>> documents){
-		String term;
 		for(int i = 0; i < documents.size(); ++i){
 			for(int j = 0; j < documents.get(i).size(); ++j){
-				term = documents.get(i).get(j);
 
+				String term = documents.get(i).get(j);
 
+				//check whether the term is already in the term index
+				Pair<Integer, LinkedList<Pair<Integer,Integer>>> hit = termIndex.get(term);
+
+				//term is not in the index
+				if(hit == null){
+					//instantiate a new linked list and add the docID and docFreq pair
+					int docID = i;
+					int docFreq = 1; //since this is the first time the term is hitting, docFreq is one
+					Pair<Integer,Integer> docIDFreqPair = new Pair<>(docID, docFreq);
+					LinkedList<Pair<Integer,Integer>> postings = new LinkedList<Pair<Integer,Integer>>();
+					postings.add(docIDFreqPair);
+
+					int numDocs = 1; //since this is the first time the term is hitting the doc, numDocs is one
+
+					//instantiate a new pair with # docs and the linked list postings
+					hit = new Pair<Integer, LinkedList<Pair<Integer,Integer>>>(numDocs, postings);
+					//place the term and index into the term index
+					termIndex.put(term, hit);
+				}
+
+				//term is in the index
+				else{
+					int currDocID = i;
+
+					boolean inPostings = false;
+					LinkedList<Pair<Integer,Integer>> postings = hit.getValue();
+
+					//iterate through the postings and check if we already have the document
+					for(int k = 0; k < postings.size(); ++k){
+    					int postingID = postings.get(k).getKey();
+						//the term appears again in the same document
+						if(currDocID == postingID){
+							inPostings = true;
+							//increase the document frequency by one
+							int docFreq = postings.get(k).getValue() + 1;
+							Pair<Integer,Integer> docIDFreqPair = new Pair<>(postingID, docFreq);
+							postings.set(k, docIDFreqPair);
+						}
+					}
+					//if the document is not apart of postings
+					if(!inPostings){
+						int numDocs = hit.getKey() + 1; //increase the number of docs the term is in TODO
+						int docFreq = 1; //since this is the first time the term is hitting the doc, docFreq is one
+						Pair<Integer,Integer> docIDFreqPair = new Pair<>(currDocID, docFreq);
+						postings.add(docIDFreqPair);
+						//maybe update hash value?
+					}
+				}
 			}
 		}
 	}
@@ -157,8 +225,10 @@ public class docIndex {
 
 		//create a document index
 		createDocIndex(documents);
+		//System.out.println(docIndex);
 
 		//create a term index
 		createTermIndex(documents);
+		System.out.println(termIndex);
     }
 }
