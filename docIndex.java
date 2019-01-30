@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.validator.routines.*;
-import org.apache.commons.lang3.*;
+import javafx.util.Pair;
 
 public class docIndex {
 
@@ -133,13 +133,15 @@ public class docIndex {
 	}
 
 	//key: term, value: # documents with a point to a linked list of postings with docID/frequency
-	public static HashMap<String, LinkedList<Integer>> termIndex = new HashMap<String, LinkedList<Integer>>();
+	public static HashMap<String, Pair<Integer, LinkedList<Pair<Integer,Integer>>>> termIndex = new HashMap<String, Pair<Integer, LinkedList<Pair<Integer,Integer>>>>();
+	//Pair<Integer, String> pair = new Pair<>(1, "One");
 
 	public static void createTermIndex(List<List<String>> documents){
 		String term;
 		for(int i = 0; i < documents.size(); ++i){
 			for(int j = 0; j < documents.get(i).size(); ++j){
 				term = documents.get(i).get(j);
+
 
 			}
 		}
