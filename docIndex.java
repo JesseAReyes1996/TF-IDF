@@ -1,10 +1,12 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.validator.routines.*;
+import org.apache.commons.lang3.*;
 
 public class docIndex {
 
@@ -23,7 +25,7 @@ public class docIndex {
 	}
 
 	//check if a given word is a stop word
-	public static boolean isStopWord(String word){
+	private static boolean isStopWord(String word){
 		word = word.toLowerCase();
 		if(stopWords.contains(word)){
 			return true;
@@ -86,6 +88,18 @@ public class docIndex {
 								continue;
 							}
 
+							//split words with a forward slash
+							if(currLine[i].contains("/")){
+								String[] forwardSlashSplit = currLine[i].split("/");
+								if(!isStopWord(forwardSlashSplit[0])){
+									tempDocument.add(forwardSlashSplit[0]);
+								}
+								if(!isStopWord(forwardSlashSplit[1])){
+									tempDocument.add(forwardSlashSplit[1]);
+								}
+								continue;
+							}
+
 							//check that the current word isn't a stop word
 							if(!isStopWord(currLine[i])){
 								tempDocument.add(currLine[i]);
@@ -106,15 +120,29 @@ public class docIndex {
 	//key: docID, value: # terms in document
 	public static HashMap<Integer, Integer> docIndex = new HashMap<Integer, Integer>();
 
-	private static void createDocIndex(List<List<String>> documents){
+	public static void createDocIndex(List<List<String>> documents){
+		int numTerms;
 		//iterate through the documents
 		for(int i = 0; i < documents.size(); ++i){
 			//get the number of terms in each document
-			int numTerms = 0;
 			numTerms = documents.get(i).size();
+			//put the docID and number of terms into the index
 			docIndex.put(i+1, numTerms);
 		}
-		System.out.println(docIndex);
+		//System.out.println(docIndex);TODO
+	}
+
+	//key: term, value: # documents with a point to a linked list of postings with docID/frequency
+	public static HashMap<String, LinkedList<Integer>> termIndex = new HashMap<String, LinkedList<Integer>>();
+
+	public static void createTermIndex(List<List<String>> documents){
+		String term;
+		for(int i = 0; i < documents.size(); ++i){
+			for(int j = 0; j < documents.get(i).size(); ++j){
+				term = documents.get(i).get(j);
+
+			}
+		}
 	}
 
     public static void main(String[] args){
@@ -127,5 +155,8 @@ public class docIndex {
 
 		//create a document index
 		createDocIndex(documents);
+
+		//create a term index
+		createTermIndex(documents);
     }
 }
