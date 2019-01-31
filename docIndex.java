@@ -96,6 +96,7 @@ public class docIndex {
 									tempDocument.add(hyphenSplit[0]);
 								}
 
+								//split words with a forward slash
 								if(hyphenSplit[1].contains("/")){
 									String[] forwardSlashSplit = hyphenSplit[1].split("/");
 									if(!isStopWord(forwardSlashSplit[0])){
@@ -204,11 +205,13 @@ public class docIndex {
 					}
 					//if the document is not apart of postings
 					if(!inPostings){
-						int numDocs = hit.getKey() + 1; //increase the number of docs the term is in TODO
-						int docFreq = 1; //since this is the first time the term is hitting the doc, docFreq is one
+						int numDocs = hit.getKey() + 1; //increase the number of docs the term is in
+						int docFreq = 1; //since this is the first time the term is hitting, docFreq is one
 						Pair<Integer,Integer> docIDFreqPair = new Pair<>(currDocID, docFreq);
 						postings.add(docIDFreqPair);
-						//maybe update hash value?
+						//update the number of documents
+						Pair<Integer, LinkedList<Pair<Integer,Integer>>> hitUpdate = new Pair<Integer, LinkedList<Pair<Integer,Integer>>>(numDocs, postings);
+						termIndex.put(term, hitUpdate);
 					}
 				}
 			}
