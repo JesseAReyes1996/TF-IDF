@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.lang.Math;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import javafx.util.Pair;
@@ -242,6 +243,29 @@ public class docIndex {
 }
 
 class test {
+	public static void computeTermWeightings(String term, LinkedList<Pair<Integer,Integer>> postings){}
+
+	public static void computeTF(LinkedList<Pair<Integer,Integer>> postings, HashMap<Integer, Integer> docIndex){
+		for(int i = 0; i < postings.size(); ++i){
+			System.out.println("numerator " + postings.get(i).getValue());
+			System.out.println("denominator " + docIndex.get(postings.get(i).getKey()));
+			double tf = (double) postings.get(i).getValue()/ (double) docIndex.get(postings.get(i).getKey());
+			System.out.println("TF (document " + Integer.toString(postings.get(i).getKey()) + "): " + Double.toString(tf));
+		}
+	}
+
+	public static void computeIDF(String term, LinkedList<Pair<Integer,Integer>> postings, HashMap<Integer, Integer> docIndex){
+		//take the natural log of (number of docs/number of docs with term 't')
+
+		System.out.println("numerator" + docIndex.size());
+		System.out.println("denominator" + postings.size());
+		double idf = Math.log( (double) docIndex.size() / (double) postings.size());
+
+		System.out.println("IDF (" + term + "): " + Double.toString(idf));
+	}
+
+	public static void computeTF_IDF(String term, LinkedList<Pair<Integer,Integer>> postings){}
+
 	public static void runTest(HashMap<String, Pair<Integer, LinkedList<Pair<Integer,Integer>>>> termIndex, HashMap<Integer, Integer> docIndex){
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -257,10 +281,13 @@ class test {
 				query = query.toLowerCase();
 
 				Pair<Integer, LinkedList<Pair<Integer,Integer>>> postings = termIndex.get(query);
-				System.out.println(postings);
+				System.out.println(docIndex);
+				System.out.println(postings.getValue());
+				computeTF(postings.getValue(), docIndex);
+				computeIDF(query, postings.getValue(), docIndex);
 
 			}catch(Exception e){
-				System.out.println("Your input is invalid!");
+				System.out.println("your input is invalid");
 				continue;
 			}
 		}
