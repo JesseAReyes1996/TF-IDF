@@ -59,14 +59,14 @@ public class docIndex {
 			Arrays.sort(directoryListing);
 
 			//iterate through the directory
-    		for(File child : directoryListing){
+			for(File child : directoryListing){
 
 				//instantiate a new temp document
 				tempDocument = new ArrayList<String>();
 
 				try(BufferedReader br = new BufferedReader(new FileReader(child))) {
 					//iterate through the document
-		    		for(String line; (line = br.readLine()) != null;){
+					for(String line; (line = br.readLine()) != null;){
 
 						//remove the zero width space character
 						line = line.replaceAll("[\\p{C}]", "");
@@ -256,7 +256,6 @@ class test {
 
 	public static void computeIDF(String term, LinkedList<Pair<Integer,Integer>> postings, HashMap<Integer, Integer> docIndex){
 		//take the natural log of (number of docs/number of docs with term 't')
-
 		System.out.println("numerator" + docIndex.size());
 		System.out.println("denominator" + postings.size());
 		double idf = Math.log( (double) docIndex.size() / (double) postings.size());
