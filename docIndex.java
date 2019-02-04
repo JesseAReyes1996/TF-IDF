@@ -244,27 +244,17 @@ public class docIndex {
 
 class test {
 	public static int computeTermWeighting(int termWeight){
-
 		return termWeight;
-
 	}
 
 	public static double computeTF(int numTerms, int totalNumTerms){
-
-			//System.out.println("numerator " + postings.get(i).getValue());
-			//System.out.println("denominator " + docIndex.get(postings.get(i).getKey()));
 			double tf = (double) numTerms / (double) totalNumTerms;
-
 			return tf;
 	}
 
 	public static double computeIDF(int numDocs, int totalNumDocs){
-
-		//take the natural log of (number of docs/number of docs with term 't')
-		//System.out.println("numerator" + docIndex.size());
-		//System.out.println("denominator" + postings.size());
+		//take the natural log of (total number of docs / number of docs with term 't')
 		double idf = Math.log( (double) totalNumDocs / (double) numDocs);
-
 		return idf;
 	}
 
@@ -288,19 +278,19 @@ class test {
 
 				Pair<Integer, LinkedList<Pair<Integer,Integer>>> postings = termIndex.get(query);
 				if(postings == null){
-					System.out.println(query + " is not in the index");
+					System.out.println("\"" + query + "\" is not in the index");
 					continue;
 				}
 
 				for(int i = 0; i < postings.getValue().size(); ++i){
 					int docID = postings.getValue().get(i).getKey();
-					int tw = computeTermWeighting(postings.getValue().get(i).getValue());
+					int termWeight = computeTermWeighting(postings.getValue().get(i).getValue());
 					double tf = computeTF(postings.getValue().get(i).getValue(), docIndex.get(postings.getValue().get(i).getKey()));
 					double idf = computeIDF(postings.getValue().size(), docIndex.size());
 					double tf_idf = computeTF_IDF(tf, idf);
 
 					System.out.println("Document ID: " + Integer.toString(docID));
-					System.out.println("Term Weighting: " + tw + ", TF: " + Double.toString(tf) + ", IDF: " + Double.toString(idf) + ", TF-IDF: " + Double.toString(tf_idf) + "\n");
+					System.out.println("Term Weighting: " + termWeight + ", TF: " + Double.toString(tf) + ", IDF: " + Double.toString(idf) + ", TF-IDF: " + Double.toString(tf_idf) + "\n");
 				}
 			}catch(Exception e){
 				System.out.println("your input is invalid");
