@@ -243,9 +243,6 @@ public class docIndex {
 }
 
 class test {
-	public static int computeTermWeighting(int termWeight){
-		return termWeight;
-	}
 
 	public static double computeTF(int numTerms, int totalNumTerms){
 			double tf = (double) numTerms / (double) totalNumTerms;
@@ -284,13 +281,12 @@ class test {
 
 				for(int i = 0; i < postings.getValue().size(); ++i){
 					int docID = postings.getValue().get(i).getKey();
-					int termWeight = computeTermWeighting(postings.getValue().get(i).getValue());
 					double tf = computeTF(postings.getValue().get(i).getValue(), docIndex.get(postings.getValue().get(i).getKey()));
 					double idf = computeIDF(postings.getValue().size(), docIndex.size());
 					double tf_idf = computeTF_IDF(tf, idf);
 
 					System.out.println("Document ID: " + Integer.toString(docID));
-					System.out.println("Term Weighting: " + termWeight + ", TF: " + Double.toString(tf) + ", IDF: " + Double.toString(idf) + ", TF-IDF: " + Double.toString(tf_idf) + "\n");
+					System.out.println("TF: " + Double.toString(tf) + ", IDF: " + Double.toString(idf) + ", TF-IDF: " + Double.toString(tf_idf) + "\n");
 				}
 			}catch(Exception e){
 				System.out.println("your input is invalid");
